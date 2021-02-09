@@ -9,6 +9,8 @@
  * Vídeo 6: Añadir los gastos al HTML debajo de listado con un método UI.
  * Vídeo 7: Restar en 'restante' cada vez que se añade un gasto.
  * Vídeo 8: Restante cambia de color en función de la cantidad.
+ * Vídeo 9: Funcionalidad botón borrar. Recobrar restante. Actualizar colores restante. 
+ 
  */
 
 /*
@@ -56,6 +58,13 @@ class Presupuesto {
 			0
 		);
 		this.restante = this.presupuesto - gastado;
+	}
+
+	// Método para eliminar gastos
+	eliminarGasto(id) {
+		this.gastos = this.gastos.filter((gasto) => gasto.id !== id);
+		// Se poner para que itere sobre los gastos y nos de el restante tras eliminar el gasto.
+		this.calcularRestante();
 	}
 }
 
@@ -119,6 +128,11 @@ class UI {
 			const btnBorrar = document.createElement('button');
 			btnBorrar.classList.add('btn', 'btn-danger', 'borrar-gasto');
 			btnBorrar.innerHTML = 'Borrar &times;'; //? Lleva HTML
+			// Para las funciones de borrar gastos
+			//? Utilizamos el Id que generamos por fechas. Si hubiiera BBDD vendría de ahí.
+			btnBorrar.onclick = () => {
+				eliminarGasto(id);
+			};
 			nuevoGasto.appendChild(btnBorrar);
 
 			// Agregar al HTML
@@ -149,6 +163,10 @@ class UI {
 		} else if (presupuesto / 2 > restante) {
 			restanteDiv.classList.remove('alert-success');
 			restanteDiv.classList.add('alert-warning');
+		} else {
+			// Vuelve a verde cuando hacemos reembolso. Son los casos que quedan.
+			restanteDiv.classList.remove('alert-danger', 'alert-warning');
+			restanteDiv.classList.add('alert-success');
 		}
 		// Si el total es <=0...
 		if (restante <= 0) {
@@ -245,5 +263,16 @@ function agregarGasto(e) {
 	ui.actualizarRestante(restante);
 
 	// Comprobamos presupuesto para los cambios de color en restante.
+	ui.comprobarPresupuesto(presupuesto);
+}
+
+function eliminarGasto(id) {
+	// Elimina gastos del objeto
+	presupuesto.eliminarGasto(id);
+	// Elimina gastos del HTMl.
+	const { gastos, restante } = presupuesto;
+	ui.mostrarGastos(gastos);
+	// Para que restante se actualice tras eliminar gasto.
+	ui.actualizarRestante(restante);
 	ui.comprobarPresupuesto(presupuesto);
 }
