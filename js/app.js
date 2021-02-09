@@ -6,8 +6,9 @@
  * Vídeo 3: Asociar clase UI para que clases Presupuesto sea mostrada.
  * Vídeo 4: Validar formulario gastos y asignar cantidad válida a los gastos
  * Vídeo 5: Recoger los gastos en la clase Presupuestos y Validar entrada correcta de datos.
- * Vídeo 6: Añadir los gastos al HTML debajo de listado con un método UI. 
- * Vídeo 7: Restar en 'restante' cada vez que se añade un gasto. 
+ * Vídeo 6: Añadir los gastos al HTML debajo de listado con un método UI.
+ * Vídeo 7: Restar en 'restante' cada vez que se añade un gasto.
+ * Vídeo 8: Restante cambia de color en función de la cantidad.
  */
 
 /*
@@ -136,6 +137,25 @@ class UI {
 	actualizarRestante(restante) {
 		document.querySelector('#restante').textContent = restante;
 	}
+	comprobarPresupuesto(presupuestObj) {
+		const { presupuesto, restante } = presupuestObj;
+
+		const restanteDiv = document.querySelector('.restante');
+
+		// Comprobar gastado 75% presupuesto.
+		if (presupuesto / 4 > restante) {
+			restanteDiv.classList.remove('alert-success', 'alert-warning');
+			restanteDiv.classList.add('alert-danger');
+		} else if (presupuesto / 2 > restante) {
+			restanteDiv.classList.remove('alert-success');
+			restanteDiv.classList.add('alert-warning');
+		}
+		// Si el total es <=0...
+		if (restante <= 0) {
+			ui.imprimirAlerta('El presupuesto se ha agotado', 'error');
+			formulario.querySelector('button[type="submit"]').disabled = true;
+		}
+	}
 }
 
 // Instanciar
@@ -220,7 +240,10 @@ function agregarGasto(e) {
 	const { gastos, restante } = presupuesto; // Destructuring
 	// ui.mostrarGastos(gastos);
 
-	ui.agregarGastoListado(gastos);
+	ui.mostrarGastos(gastos);
 
 	ui.actualizarRestante(restante);
+
+	// Comprobamos presupuesto para los cambios de color en restante.
+	ui.comprobarPresupuesto(presupuesto);
 }
